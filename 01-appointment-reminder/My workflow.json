@@ -1,0 +1,233 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "احجز موعدك الآن",
+        "formDescription": "املأ البيانات وسنؤكد موعدك خلال دقائق",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "الاسم الكامل"
+            },
+            {
+              "fieldLabel": "رقم الهاتف"
+            },
+            {
+              "fieldLabel": "الخدمة المطلوبة",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "قص شعر"
+                  },
+                  {
+                    "option": "حلاقة ذقن"
+                  },
+                  {
+                    "option": "صبغة"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "الوقت المفضل",
+              "fieldType": "date"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ae9ad4f4-9d77-4cc2-9db1-d56f9a17aecf",
+      "name": "On form submission",
+      "webhookId": "f1d1e6d0-5d42-495d-af10-2e964e67121d"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "mode": "list",
+          "cachedResultName": "حجوزات الصالون",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json['الاسم الكامل'] }}",
+            "phone ": "={{ $json['رقم الهاتف'] }}",
+            "service": "={{ $json['الخدمة المطلوبة'] }}",
+            "PreferredTime": "={{ $json.submittedAt }}",
+            "Status": "Pending"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone ",
+              "displayName": "phone ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PreferredTime",
+              "displayName": "PreferredTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e575f06d-4324-48ec-82fd-5589c1a5d149",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  const name = item.json.Name;\n  const phone = item.json.Phone;\n  const service = item.json.Service;\n  const time = item.json.PreferredTime;\n  \n  const message = `مرحباً ${name}، استلمنا طلب حجزك لخدمة: ${service} في الوقت: ${time}. سنؤكد لك الموعد قريباً. شكراً لثقتك!`;\n  \n  const encodedMessage = encodeURIComponent(message);\n  const whatsappLink = `https://wa.me/${phone}?text=${encodedMessage}`;\n  \n  item.json.whatsappLink = whatsappLink;\n  item.json.messagePreview = message;\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "23fda007-4d8c-413d-a8bb-0a6e43afd7b6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "lamrinaoufel02@gmail.com",
+        "subject": "طلب حجز جديد - يحتاج تأكيد",
+        "emailType": "text",
+        "message": "=طلب حجز جديد وصل!\n\n{{ $json.messagePreview }}\n\nاضغط هنا لإرسال تأكيد الحجز للعميل مباشرة:\n{{ $json.whatsappLink }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "9125246c-a91c-4483-b10f-94b55fcf3a30",
+      "name": "Send a message",
+      "webhookId": "c6d9f18b-78ca-4f78-8ca7-d50db9f11f75",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xw51LtB9uR0mEQuT",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "87866357-eb4c-4497-8009-92adab849d95",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
+  },
+  "nodeGroups": [],
+  "id": "iElNCikkQs5l70Lq",
+  "tags": []
+}
