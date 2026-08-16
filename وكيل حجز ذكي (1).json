@@ -1,0 +1,439 @@
+{
+  "name": "وكيل حجز ذكي",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "مرحباً بك في صالون [nofl]! 👋\nكيف أقدر أساعدك اليوم؟ حجز موعد جديد أو تعديل حجز موجود؟",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -48,
+        -32
+      ],
+      "id": "9e293944-4195-41b8-a3f6-8612560f0bc0",
+      "name": "When chat message received",
+      "webhookId": "bb448273-e1d8-4e82-a988-9f19bfe1b822"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "أنت مساعد ذكي لصالون حلاقة وتجميل. مهمتك مساعدة العملاء في حجز مواعيدهم أو تعديلها أو إلغائها بطريقة ودودة ومهنية.\n\nالخدمات المتاحة: قص شعر، حلاقة ذقن، صبغة.\n\nفي بداية أي محادثة، افهم أولاً: هل العميل يريد \"حجز جديد\" أم \"تعديل/إلغاء حجز موجود\"؟\n\n## للحجز الجديد:\n1. اجمع المعلومات (الاسم، رقم الهاتف، الخدمة، الوقت المفضل)\n2. إذا سأل عن السعر، استخدم أداة \"الأسعار\"\n3. بعد جمع كل المعلومات، استخدم أداة \"البحث عن المواعيد\" للتحقق من عدم وجود تعارض (خلال ساعة قبل أو بعد)\n4. إذا وُجد تعارض، اقترح وقتاً بديلاً\n5. إذا كان متاحاً، استخدم أداة \"حفظ الحجز\"، وأكد للعميل مع ذكر السعر\n\n## لتعديل أو إلغاء حجز:\n1. اطلب من العميل رقم هاتفه للتعرف على حجزه\n2. إذا أراد التعديل، اسأله عن التفاصيل الجديدة (وقت جديد مثلاً)\n3. إذا أراد الإلغاء، أكّد معه أولاً قبل التنفيذ\n4. استخدم أداة \"تعديل/إلغاء الحجز\"، واستخدم رقم الهاتف كمعرّف للصف الصحيح (Column to Match On = phone_number)\n5. عند الإلغاء، يجب تحديث عمود Status تحديداً إلى القيمة \"ملغى\" (وليس ترك القيمة القديمة \"مؤكد\")\n6. عند التعديل، حدّث الحقل المطلوب فقط (مثل PreferredTime) واترك باقي الأعمدة كما هي\n7. بعد تنفيذ الأداة بنجاح، تحقق من نتيجة تنفيذها فعلياً قبل إخبار العميل أن العملية نجحت — لا تفترض النجاح تلقائياً فقط لأنك استدعيت الأداة\n\nتحدث بالعربية دائماً، بأسلوب ودود ومختصر."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        336,
+        -32
+      ],
+      "id": "608a0790-9ccd-4008-b10b-cba4a6a77bbf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        208
+      ],
+      "id": "e3c9e82a-afdc-44ae-8918-28d1fbe1c55d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "E8OShStL8pTrj8qA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        208
+      ],
+      "id": "d50cc273-af47-4c34-a865-6277ab5f1fe8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة لحفظ حجز جديد في قاعدة البيانات، فقط بعد جمع كل المعلومات المطلوبة من العميل: الاسم، رقم الهاتف، الخدمة، والوقت المفضل.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "mode": "list",
+          "cachedResultName": "حجوزات الصالون",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', ``, 'string') }}",
+            "phone ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('phone_', ``, 'string') }}",
+            "service": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('service', ``, 'string') }}",
+            "PreferredTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PreferredTime', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone ",
+              "displayName": "phone ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PreferredTime",
+              "displayName": "PreferredTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        208
+      ],
+      "id": "cbb5f334-fc0e-43f5-baa6-aeb95646867f",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة للبحث في المواعيد الموجودة والتحقق هل يوجد تعارض، قبل تأكيد أي حجز جديد مع العميل.",
+        "documentId": {
+          "__rl": true,
+          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "mode": "list",
+          "cachedResultName": "حجوزات الصالون",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        208
+      ],
+      "id": "65823340-6d02-4615-8a77-d12dc70a964c",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة لمعرفة سعر أي خدمة عند سؤال العميل عن السعر، أو لذكره تلقائياً عند تأكيد الحجز.",
+        "documentId": {
+          "__rl": true,
+          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "mode": "list",
+          "cachedResultName": "حجوزات الصالون",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 470401756,
+          "mode": "list",
+          "cachedResultName": "الاسعار",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=470401756"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        208
+      ],
+      "id": "023910c7-35f5-43f1-b2c1-59d0607aeb07",
+      "name": "Get row(s) in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة لتعديل حجز موجود (تغيير الوقت أو الخدمة) أو لإلغائه، بعد التأكد من رقم هاتف العميل. للإلغاء، اكتب \"ملغى\" في عمود Status.",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "mode": "list",
+          "cachedResultName": "حجوزات الصالون",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('phone___using_to_match_', ``, 'string') }}",
+            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', ``, 'string') }}",
+            "service": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('service', ``, 'string') }}",
+            "PreferredTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PreferredTime', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "phone "
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone ",
+              "displayName": "phone ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PreferredTime",
+              "displayName": "PreferredTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        224
+      ],
+      "id": "dedd438b-ebd4-45a4-afc4-32d8008c2c7f",
+      "name": "Update row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1922c7ea-07fc-41fa-a4c4-b62ee37f5dd2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
+  },
+  "nodeGroups": [],
+  "id": "K4buhMEUPG3zFrsf",
+  "tags": []
+}
