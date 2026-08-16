@@ -1,0 +1,142 @@
+{
+  "name": "مساعد بحث ذكي",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "390c5448-a2cb-4b7f-b2f2-958674ff4788",
+      "name": "When chat message received",
+      "webhookId": "2df6f800-0965-4490-b5d5-a517c67f1c18"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "أنت مساعد بحث ذكي متعدد المصادر. لديك أداتان:\n1. أداة بحث وقراءة صفحات من الإنترنت - استخدمها للإجابة عن أسئلة عامة أو حديثة\n2. أداة DeepWiki - استخدمها عندما يسأل المستخدم عن أي مشروع برمجي على GitHub (مثل: \"اشرح لي مشروع React\" أو \"كيف يعمل مشروع كذا؟\")\n\nاختر الأداة المناسبة حسب طبيعة السؤال، وأجب بالعربية دائماً بأسلوب واضح ومختصر."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "998b5292-c4d4-4357-9838-83bea5bed5cb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        176
+      ],
+      "id": "787fb2e8-5090-45d5-936f-f0d653c5e018",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "E8OShStL8pTrj8qA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://docs.x.com/mcp",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        464,
+        160
+      ],
+      "id": "7d9caa58-0284-4b47-84c8-dac81355fc3c",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://mcp.deepwiki.com/mcp",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        368,
+        224
+      ],
+      "id": "b4038342-d880-4ecb-8298-8e2cd835c041",
+      "name": "DeepWiki"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepWiki": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8c7cfa66-29c3-4a6f-be31-c9c486b8cdcc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
+  },
+  "nodeGroups": [],
+  "id": "T5QSvFEY3AABDVQL",
+  "tags": []
+}
