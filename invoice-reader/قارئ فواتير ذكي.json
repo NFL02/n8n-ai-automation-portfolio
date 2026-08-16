@@ -1,0 +1,207 @@
+{
+  "name": "قارئ فواتير ذكي",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ارفع فاتورتك",
+        "formDescription": "صوّر الفاتورة وارفعها هنا، وسنسجلها تلقائياً",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "invoice_image",
+              "fieldType": "file",
+              "acceptFileTypes": "*/image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4f5b6299-9b17-419d-b9e8-da3cdc5937b4",
+      "name": "On form submission",
+      "webhookId": "37e12084-4eae-4c65-9d66-f0874da12ea1"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "text": "اقرأ هذه الفاتورة واستخرج البيانات بصيغة JSON فقط، بدون أي نص إضافي قبله أو بعده، بهذا الشكل بالضبط:\n\n{\n  \"supplier\": \"اسم المورد أو المتجر\",\n  \"date\": \"التاريخ\",\n  \"total\": \"المبلغ الإجمالي\",\n  \"products\": \"قائمة المنتجات مفصولة بفواصل\"\n}\n\nإذا كانت أي معلومة غير واضحة، اكتب \"غير واضح\" كقيمة لها. لا تكتب أي شرح أو مقدمة، فقط الـ JSON مباشرة.",
+        "inputType": "binary",
+        "binaryPropertyName": "invoice_image",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f81b37a8-a456-4784-b7a2-b3b645641e51",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "E8OShStL8pTrj8qA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wODHJvB-GBqHXHW7EQAqkA4pME3p051OpzmQxQekKUo",
+          "mode": "list",
+          "cachedResultName": "سجل الفواتير",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wODHJvB-GBqHXHW7EQAqkA4pME3p051OpzmQxQekKUo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wODHJvB-GBqHXHW7EQAqkA4pME3p051OpzmQxQekKUo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Supplier": "={{ $json.supplier }}",
+            "Date": "={{ $json.date }}",
+            "TotalAmount": "={{ $json.total }}",
+            "Products": "={{ $json.products }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Supplier",
+              "displayName": "Supplier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TotalAmount",
+              "displayName": "TotalAmount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Products",
+              "displayName": "Products",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        0
+      ],
+      "id": "6bd2b691-e517-46ab-886c-14d4391955c1",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nfor (const item of items) {\n  // الوصول للنص الخام القادم من Gemini\n  const rawText = item.json.content.parts[0].text;\n  \n  // إزالة أي علامات ```json``` إن وجدت، وتحويل النص لكائن JSON حقيقي\n  const cleanText = rawText.replace(/```json|```/g, '').trim();\n  const invoiceData = JSON.parse(cleanText);\n  \n  item.json.supplier = invoiceData.supplier;\n  item.json.date = invoiceData.date;\n  item.json.total = invoiceData.total;\n  item.json.products = invoiceData.products;\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "acf6dd80-f10a-4b79-a9e5-3c49edbd4c62",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8ff9b48c-0737-4153-baf4-54d2afe45d7f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
+  },
+  "nodeGroups": [],
+  "id": "dWgMbBvrDXk1Xpht",
+  "tags": []
+}
