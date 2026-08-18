@@ -1,0 +1,459 @@
+{
+  "name": "مركز دعم العملاء",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "92ae6d97-021b-42fe-9d36-e144f47c1636",
+      "name": "When chat message received",
+      "webhookId": "4c033086-a186-409b-aef2-72c3e723bfd0"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "أنت مساعد ذكي لخدمة دعم العملاء لدى شركتنا. مهمتك مساعدة العملاء بمهنية، ودقة، وتعاطف.\n\nلديك 5 أدوات، كل واحدة لغرض محدد:\n1. search_faq: للبحث في الأسئلة الشائعة ومعلومات الشركة\n2. check_order: للتحقق من حالة طلب موجود\n3. log_complaint: لتسجيل شكوى عميل\n4. notify_staff: لإرسال إشعار بريد إلكتروني للموظف المسؤول\n5. save_rating: لحفظ تقييم رضا العميل\n\nاتبع هذا المنطق بالضبط حسب نوع رسالة العميل:\n\n## المسار 1: سؤال عام أو استفسار\nإذا سأل العميل عن ساعات العمل، سياسة الإرجاع، التوصيل، الدفع، أو أي معلومة عامة عن الشركة:\n- استخدم أداة search_faq فوراً للحصول على الإجابة الدقيقة\n- لا تجب من معلوماتك الخاصة أبداً، اعتمد فقط على ما ترجعه الأداة\n- إذا لم تجد الأداة إجابة، اعتذر وأخبره أنك ستحوّله لموظف بشري\n\n## المسار 2: الاستفسار عن حالة طلب\nإذا سأل العميل عن حالة طلبه أو حجزه:\n- اطلب منه رقم الطلب (OrderID) إن لم يذكره\n- استخدم أداة check_order للبحث عن الطلب وإرجاع حالته الحقيقية\n- أخبره بالحالة والتاريخ المتوقع بوضوح\n\n## المسار 3: شكوى\nإذا اشتكى العميل من مشكلة (منتج تالف، تأخير، سوء خدمة، أو أي شيء آخر):\n1. تعاطف معه فوراً واعتذر بصدق\n2. اجمع المعلومات الأساسية المطلوبة فقط: رقم هاتفه، ووصف مختصر للمشكلة\n3. لا تطلب أكثر من معلومتين إضافيتين كحد أقصى (لا تكرر السؤال عن نفس الشيء أكثر من مرة واحدة)\n4. بمجرد حصولك على رقم الهاتف ووصف المشكلة، استخدم أداة log_complaint فوراً لتسجيلها - لا تنتظر تفاصيل أكثر مما هو ضروري\n5. مباشرة بعد نجاح log_complaint، استخدم أداة notify_staff لإرسال إشعار فوري للموظف\n6. أكد للعميل بوضوح أن شكواه سُجلت وأن الفريق سيتواصل معه قريباً\n7. لا تخبر العميل أبداً أن شيئاً \"تم\" أو \"سُجل\" إلا بعد أن تستخدم الأداة فعلياً وتحصل على نتيجة ناجحة منها - لا تفترض النجاح أبداً\n\n## المسار 4: تقييم الرضا\nبعد حل أي استفسار أو شكوى بنجاح، في نهاية المحادثة فقط:\n- اسأل العميل بلطف: \"هل يمكنك تقييم تجربتك معنا من 1 إلى 5؟\"\n- إذا أعطاك تقييماً، استخدم أداة save_rating لحفظه مع رقم هاتفه وأي تعليق إضافي\n\n## قواعد عامة مهمة:\n- لا تكرر نفس السؤال على العميل أكثر من مرة واحدة في نفس المحادثة\n- إذا استخدمت أداة ولم تنجح (رجعت خطأ)، أخبر العميل بصراحة أن هناك مشكلة تقنية مؤقتة، ولا تتظاهر بالنجاح\n- تحدث بالعربية دائماً، بأسلوب ودود، واضح، ومختصر\n- ابدأ كل محادثة جديدة بفهم ماذا يريد العميل أولاً (سؤال عام، استفسار عن طلب، شكوى) قبل أي إجراء"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "c2b8a4a8-8295-4bfd-a808-2f2cb10ee917",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        112
+      ],
+      "id": "96fa31bd-87f3-465e-9a35-08f3c1670dd2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "E8OShStL8pTrj8qA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "استخدم هذه الأداة للبحث في الأسئلة الشائعة ومعلومات الشركة (ساعات العمل، سياسة الإرجاع، التوصيل، الدفع) عندما يسأل العميل عن هذه المواضيع.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        128
+      ],
+      "id": "2b675395-b930-45a3-a3fa-58c026e54239",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "7jViNxfxxBibzgeP",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-2"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        592,
+        272
+      ],
+      "id": "2c6b647c-746d-48c0-85a2-d6e021f190e9",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "E8OShStL8pTrj8qA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة للتحقق من حالة طلب العميل، بعد الحصول على رقم الطلب (OrderID) أو رقم هاتفه.",
+        "documentId": {
+          "__rl": true,
+          "value": "1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk",
+          "mode": "list",
+          "cachedResultName": "الأسئلة الشائعة",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 513712425,
+          "mode": "list",
+          "cachedResultName": "الطلبات",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk/edit#gid=513712425"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        192
+      ],
+      "id": "009ae2c8-7e68-46db-a9a2-664209a1dde7",
+      "name": "check_order",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة لإرسال إشعار فوري للموظف المسؤول بعد تسجيل أي شكوى جديدة.",
+        "sendTo": "lamrinaoufel26@gmail.com",
+        "subject": "شكوى عميل جديدة - تحتاج متابعة",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        208
+      ],
+      "id": "a2f2dcdd-26b4-427a-926e-9ec196a1cb14",
+      "name": "notify_staff",
+      "webhookId": "b98c5d5a-498a-4d80-902c-cb26bff24420",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xw51LtB9uR0mEQuT",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة لتسجيل شكوى العميل بعد جمع تفاصيلها ورقم هاتفه.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk",
+          "mode": "list",
+          "cachedResultName": "الأسئلة الشائعة",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1945527936,
+          "mode": "list",
+          "cachedResultName": "الشكاوى",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk/edit#gid=1945527936"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CustomerPhone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CustomerPhone', ``, 'string') }}",
+            "ComplaintDetails": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ComplaintDetails', ``, 'string') }}",
+            "Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "CustomerPhone",
+              "displayName": "CustomerPhone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ComplaintDetails",
+              "displayName": "ComplaintDetails",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        192
+      ],
+      "id": "d89ecde0-f117-46f6-bd28-46bbe524d485",
+      "name": "log_complaint",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        128
+      ],
+      "id": "06abb9df-14fb-45f9-80a5-689435a92cc0",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة لحفظ تقييم العميل بعد أن يعطيك رقماً من 1 إلى 5 مع أي تعليق اختياري.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk",
+          "mode": "list",
+          "cachedResultName": "الأسئلة الشائعة",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1251343840,
+          "mode": "list",
+          "cachedResultName": "التقييمات",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qVyigbVkajq2NDcyg0I7PPLlPyRRp8CKwoL-G7tmXrk/edit#gid=1251343840"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CustomerPhone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CustomerPhone', ``, 'string') }}",
+            "Rating": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Rating', ``, 'string') }}",
+            "Comment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Comment', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "CustomerPhone",
+              "displayName": "CustomerPhone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comment",
+              "displayName": "Comment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        176,
+        288
+      ],
+      "id": "851892fc-b544-49d7-9e2b-f79730b374c4",
+      "name": "save_rating",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_order": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "notify_staff": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "log_complaint": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save_rating": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "01203cea-9fea-41c9-8d10-1d6bdd7aad67",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
+  },
+  "nodeGroups": [],
+  "id": "EEUCjqpCew3MSZAW",
+  "tags": []
+}
