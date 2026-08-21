@@ -1,0 +1,581 @@
+{
+  "name": "WhatsApp Archive to Drive",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-incoming",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -192,
+        -80
+      ],
+      "id": "36e8af40-e576-4ef5-9f91-9374c703060d",
+      "name": "Webhook",
+      "webhookId": "fb953796-e03f-45d6-9b86-3ac020495b7f"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2a8cfa91-cefc-4f28-88b1-98fac4029058",
+              "leftValue": "={{ [\"image\",\"video\",\"document\"].includes($json.body.messages[0].type) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        48,
+        -80
+      ],
+      "id": "d01be9a6-075a-4421-a1af-34436b1b3189",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.messages[0].image?.link || $json.body.messages[0].video?.link || $json.body.messages[0].document?.link }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        496,
+        -96
+      ],
+      "id": "d21d9bea-ed9c-4a63-a49b-7b7193467ffe",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "facb6187-e54e-4931-b2a8-15d215e2054e",
+              "name": "contactName",
+              "value": "=   {{ $('Webhook').item.json.body.messages[0].from_name || $('Webhook').item.json.body.messages[0].from }}",
+              "type": "string"
+            },
+            {
+              "id": "b183112a-a4de-453e-9cbd-a90b9eeab307",
+              "name": "folderName",
+              "value": "=   {{ $now.format('yyyy-MM-dd') }} - {{ $('Webhook').item.json.body.messages[0].from_name || $('Webhook').item.json.body.messages[0].from }}",
+              "type": "string"
+            },
+            {
+              "id": "6f4248e8-ff45-44f5-abf8-fab9348e7bba",
+              "name": "fileName",
+              "value": "=   {{ $binary.data.fileName || ($now.format('yyyyMMdd_HHmmss') + '.' + $binary.data.fileExtension) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        704,
+        -96
+      ],
+      "id": "d76e487b-5f7e-4585-85b2-52a4bb59db54",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "=   {{ $json.folderName }}",
+        "filter": {
+          "whatToSearch": "folders"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        944,
+        -96
+      ],
+      "id": "df60b6a4-2071-41ce-9b40-b837e7d76526",
+      "name": "Search files and folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xfnEhjlb9iySQ7RZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ee3557e8-91b1-419b-8750-f75fd0d44095",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        -96
+      ],
+      "id": "f652b841-222b-45c0-a2fb-6fc0a74fc843",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=   {{ $('Edit Fields').item.json.folderName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1520,
+        0
+      ],
+      "id": "4fe53546-397c-4cb3-af61-268746dc1879",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xfnEhjlb9iySQ7RZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b73507e1-1745-467b-959f-cf4e24a034f6",
+              "name": "targetFolderId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1520,
+        -176
+      ],
+      "id": "af084eb5-c49b-488b-bf88-b6d05824a9db",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4d9eb688-76ec-4c4e-aac9-98645ff6b007",
+              "name": "targetFolderId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1696,
+        0
+      ],
+      "id": "e24f8811-47b3-4418-8142-38aa497f6b37",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Edit Fields').item.json.fileName }}",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $json.targetFolderId }}",
+            "mode": "id"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        -112
+      ],
+      "id": "cb71bcdf-a8f6-4eef-905f-40b70007e9c1",
+      "name": "Search files and folders1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xfnEhjlb9iySQ7RZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b8fd276f-9c41-4767-81cc-3613ec63a37d",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2224,
+        -112
+      ],
+      "id": "811fabc8-83bf-4dfc-91ce-ee579387df21",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Edit Fields').item.json.fileName;\nconst dotIndex = original.lastIndexOf('.');\nconst namePart = dotIndex > -1 ? original.substring(0, dotIndex) : original;\nconst ext = dotIndex > -1 ? original.substring(dotIndex) : '';\nconst stamp = new Date().toISOString().replace(/[:T]/g,'-').split('.')[0];\nreturn [{ json: { finalFileName: `${namePart}_${stamp}${ext}` } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2448,
+        -208
+      ],
+      "id": "6536a13c-f563-4513-b0a5-d801b49ef1b1",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d23711bf-ff15-40f5-bca9-d3082de7329b",
+              "name": "finalFileName",
+              "value": "={{ $json.finalFileName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2448,
+        -16
+      ],
+      "id": "f71485d4-6c5b-4f19-87d3-25114949c542",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "name": "={{ $if($('Code in JavaScript').isExecuted, $('Code in JavaScript').first().json.finalFileName, $('Edit Fields1').first().json.finalFileName) }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields2').first().json.targetFolderId || $('Edit Fields3').first().json.targetFolderId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3232,
+        -112
+      ],
+      "id": "2f16f2cf-53e5-4d8d-8502-0053e664c313",
+      "name": "Upload file",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xfnEhjlb9iySQ7RZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2960,
+        -112
+      ],
+      "id": "a78e13db-f2a0-4a58-b8ec-3dfc10946381",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5d58af64-c861-4eb4-a25a-e840de64ad1b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
+  },
+  "nodeGroups": [],
+  "id": "IKId2nbZlZnKyfU0",
+  "tags": []
+}
