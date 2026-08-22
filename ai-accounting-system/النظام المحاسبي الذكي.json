@@ -1,0 +1,591 @@
+{
+  "name": "النظام المحاسبي الذكي",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "df6c107c-b3ba-4385-a33a-e44069807960",
+      "name": "When chat message received",
+      "webhookId": "39140a92-d7bb-4ae4-8fe1-d313e5361cee"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "bda02528-b5bd-407d-a1a6-6db12e753fa0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        176
+      ],
+      "id": "7a872f1e-d5ed-49d4-a783-24df1d85c192",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "E8OShStL8pTrj8qA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        320,
+        176
+      ],
+      "id": "238c4491-1935-487b-ac7d-8fa1d0a80829",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة عندما يطلب المستخدم تسجيل مصروف أو دخل جديد. استخرج من رسالته: النوع (income/expense)، المبلغ، الفئة، والوصف. قبل تحديد الفئة، استخدم أداة قراءة الفئات المعتمدة أولاً إن لم تكن قد استخدمتها في هذه المحادثة.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY",
+          "mode": "list",
+          "cachedResultName": "النظام المحاسبي المتكامل",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "المعاملات",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "=Expression: {{ $now.format('yyyy-MM-dd') }}",
+            "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', ``, 'string') }}",
+            "category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('category', `اسم الفئة فقط بالإنجليزية أو العربية، كلمة أو كلمتين، بدون أرقام`, 'string') }}",
+            "amount": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('amount', `رقم فقط بدون عملة أو نص، مثل 3000`, 'string') }}",
+            "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('description', `جملة قصيرة تصف المعاملة`, 'string') }}",
+            "source": "AI Agent محادثة"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "amount",
+              "displayName": "amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        128
+      ],
+      "id": "eeaa801d-4c02-4b3b-b4d5-ccd152d2f989",
+      "name": "register_transaction",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة عندما يسأل المستخدم عن ملخص مالي، مثل إجمالي المصروفات، الدخل، أو صافي الربح، لفترة معينة. تُرجع هذه الأداة كل صفوف جدول المعاملات، ويجب عليك أنت حساب المجموع والفرق بناءً على التاريخ والنوع (income/expense) المطلوبين في السؤال.",
+        "documentId": {
+          "__rl": true,
+          "value": "1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY",
+          "mode": "list",
+          "cachedResultName": "النظام المحاسبي المتكامل",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "المعاملات",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        640,
+        128
+      ],
+      "id": "503a82ff-3d84-45f2-92c4-12f54fcdd081",
+      "name": "query_financial_summary",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة قبل تسجيل أي معاملة جديدة، للحصول على قائمة الفئات المعتمدة (category_name, type). اختر أقرب فئة مطابقة من هذه القائمة عند تسجيل معاملة، بدل اختراع فئة جديدة.",
+        "documentId": {
+          "__rl": true,
+          "value": "1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY",
+          "mode": "list",
+          "cachedResultName": "النظام المحاسبي المتكامل",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1969500896,
+          "mode": "list",
+          "cachedResultName": "الفئات",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit#gid=1969500896"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        144
+      ],
+      "id": "a2e272af-1dc3-4af7-90ce-efed65f91cd2",
+      "name": "classify_category",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "استخدم هذه الأداة لتعديل معاملة موجودة. أولاً استخدم أداة الاستعلام لمعرفة قيمة row_number الخاصة بالصف المطلوب بناءً على وصف المستخدم. ثم عدّل فقط الحقول التي طلب المستخدم تغييرها، واترك الباقي كما هو.",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY",
+          "mode": "list",
+          "cachedResultName": "النظام المحاسبي المتكامل",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "المعاملات",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('row_number__using_to_match_', ``, 'number') }}",
+            "date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('date', ``, 'string') }}",
+            "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', ``, 'string') }}",
+            "category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('category', ``, 'string') }}",
+            "amount": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('amount', ``, 'string') }}",
+            "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('description', ``, 'string') }}",
+            "source": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('source', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "amount",
+              "displayName": "amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        176
+      ],
+      "id": "9a345b3f-bd51-4711-912c-35716634acaf",
+      "name": "update_delete_transaction",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -16,
+        368
+      ],
+      "id": "72da557a-e069-49ea-9783-44cae3dda8ac",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY",
+          "mode": "list",
+          "cachedResultName": "النظام المحاسبي المتكامل",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "المعاملات",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e649PwDDYQyw6GYbhHeQCF95FZ9AupqiVO6bKL9qgwY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        368
+      ],
+      "id": "a276e7c1-9112-4ac3-86f1-e5691a981f77",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aw0nRLdHbwyrgLhQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst now = new Date();\nconst currentMonth = now.getMonth();\nconst currentYear = now.getFullYear();\n\nlet totalIncome = 0;\nlet totalExpense = 0;\nconst details = [];\n\nfor (const item of items) {\n  const row = item.json;\n  const rowDate = new Date(row.date);\n\n  if (rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear) {\n    const amount = parseFloat(row.amount) || 0;\n    if (row.type === 'income') {\n      totalIncome += amount;\n    } else if (row.type === 'expense') {\n      totalExpense += amount;\n    }\n    details.push(`${row.date} | ${row.type} | ${row.category} | ${amount} | ${row.description}`);\n  }\n}\n\nconst netProfit = totalIncome - totalExpense;\nconst monthName = now.toLocaleDateString('ar', { month: 'long', year: 'numeric' });\n\nreturn [{\n  json: {\n    monthName,\n    totalIncome,\n    totalExpense,\n    netProfit,\n    transactionCount: details.length,\n    detailsText: details.join('\\n')\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        368
+      ],
+      "id": "e4b703c8-2533-4c0b-9cf4-a3d2b9c8b9d5",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "lamrinaoufel02@gmail.com",
+        "subject": "=   التقرير المالي الشهري - {{ $json.monthName }}",
+        "emailType": "text",
+        "message": "=   التقرير المالي لشهر {{ $json.monthName }}\n\n   إجمالي الدخل: {{ $json.totalIncome }} دج\n   إجمالي المصروفات: {{ $json.totalExpense }} دج\n   صافي الربح/الخسارة: {{ $json.netProfit }} دج\n   عدد المعاملات: {{ $json.transactionCount }}\n\n   تفاصيل المعاملات:\n   {{ $json.detailsText }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        656,
+        368
+      ],
+      "id": "5d34aa72-fe87-4d31-84ec-6ab23376891e",
+      "name": "Send a message",
+      "webhookId": "697a3e36-b871-4bbc-a567-8bf2c3be920b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xw51LtB9uR0mEQuT",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "register_transaction": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_financial_summary": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "classify_category": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_delete_transaction": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "625195ca-924d-4a49-a4e7-edf178ac9d80",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
+  },
+  "nodeGroups": [],
+  "id": "JVXlo7mPQ4R4DrM9",
+  "tags": []
+}
