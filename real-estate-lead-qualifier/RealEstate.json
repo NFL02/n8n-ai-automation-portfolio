@@ -1,0 +1,643 @@
+{
+  "name": "real-estate-ai-lead-qualifier",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [0, 0],
+      "id": "64191557-fa87-40f9-94d1-4a05f686b6c4",
+      "name": "Telegram Trigger",
+      "webhookId": "412cd669-5321-4ca9-83fd-9a60d36585de",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1b4cdb1-657a-4e17-850d-8b7d05f93ed1",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "aaa221d0-585c-4573-8dd2-759a024c934f",
+              "name": "user_message",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "f435fe6f-d4f2-489f-b8d1-de73ba0035da",
+              "name": "user_name",
+              "value": "={{ $json.message.from.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "09486951-cb9c-4e0b-a75f-ea450831a179",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [224, 0],
+      "id": "9a711dbb-8dbb-4739-9d61-6595a6ee1b83",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.user_message }}",
+                    "rightValue": "/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "16a51fdf-9957-4d78-8b5e-94f160b4277a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [448, 0],
+      "id": "3f9fc142-f5ca-4f55-ad1f-63d31823a160",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.user_message }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b8a2f930-7362-4976-8ab7-4c3b3883ef2c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b8a0f456-e85f-4dba-be09-9bef60fdce6e",
+                    "leftValue": "={{ $json.user_message }}",
+                    "rightValue": "/reset",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5322c2f1-1986-47a0-925a-c136362d894f",
+                    "leftValue": "={{ $json.user_message }}",
+                    "rightValue": "/help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [656, -208],
+      "id": "824caa7c-fab0-4dd9-bb17-4a154dd0ebb8",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "أهلاً بك! 👋 أنا نور، مساعدك العقاري. سأساعدك في إيجاد العقار المناسب لك. ما نوع العقار الذي تبحث عنه؟ 🏠 (شقة / فيلا / محل / أرض)",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [832, -448],
+      "id": "58b29833-1e12-43b3-b5e5-886c981b754e",
+      "name": "Send a text message",
+      "webhookId": "463a63b6-81c9-48ea-8c19-7b6c00696a2c",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "leads sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $json.chat_id }}",
+            "stage ": "STAGE_1",
+            "qualified": "false"
+          },
+          "matchingColumns": ["chat_id"],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [992, -288],
+      "id": "27774696-1010-4387-a516-c09c4671c3cf",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "✅ تم إعادة التعيين يمكنك البدء من جديد، أرسل /start",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1184, -288],
+      "id": "0f9d9fbd-0dd5-46ea-851f-de12aef63cdf",
+      "name": "Send a text message1",
+      "webhookId": "26dd1faf-adf0-4c26-ab66-dd71cad31670",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "📋 الأوامر المتاحة:\n/start - بدء محادثة جديدة\n/reset - إعادة التعيين من البداية\n/help  - عرض هذه القائمة\n\nأو أرسل رسالتك مباشرة وسأرد عليك 😊",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [848, -176],
+      "id": "1c7353c3-5565-4c81-ad5e-552e3eee987d",
+      "name": "Send a text message2",
+      "webhookId": "023c6462-31db-4c8f-95ff-0efc5c6c0b8b",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "❓ أمر غير معروف\nأرسل /help لرؤية الأوامر المتاحة",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [880, -48],
+      "id": "821d510e-39f6-4daf-bf41-d244167e1283",
+      "name": "Send a text message3",
+      "webhookId": "237b3094-af2e-4c8c-93b9-6e0f15cd3669",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "leads sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "chat_id",
+              "lookupValue": "={{ $json.chat_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [672, 96],
+      "id": "3fce1839-d440-4fe9-a4c8-5aa7b33bf0ef",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ════════════════════════════════════════════\n// NODE 5: Prepare Context + Build System Prompt\n// ════════════════════════════════════════════\n\nconst chat_id      = $('Edit Fields').item.json.chat_id;\nconst user_message = $('Edit Fields').item.json.user_message;\nconst user_name    = $('Edit Fields').item.json.user_name;\n\nconst sheetsData = $('Get row(s) in sheet').all();\nconst lead = sheetsData.length > 0 ? sheetsData[0].json : null;\n\nconst current_stage = lead?.stage || 'STAGE_1';\n\nconst collected_data = lead ? {\n  property_type:  lead.property_type  || null,\n  budget:         lead.budget         || null,\n  area:           lead.area           || null,\n  preferred_date: lead.preferred_date || null\n} : {};\n\nlet conversation_history = [];\ntry {\n  conversation_history = JSON.parse(lead?.conversation_history || '[]');\n  if (conversation_history.length > 10) {\n    conversation_history = conversation_history.slice(-10);\n  }\n} catch(e) {\n  conversation_history = [];\n}\n\nconversation_history.push({\n  role:      'user',\n  content:   user_message,\n  timestamp: new Date().toISOString()\n});\n\nconst system_prompt = `أنت مساعد تأهيل عملاء لوكالة عقارية احترافية. اسمك \"نور\". ردودك باللغة العربية دائماً، ودية ومهنية.\n\nمعلومات العميل الحالية:\n- الاسم: ${user_name}\n- المرحلة الحالية: ${current_stage}\n- البيانات المجمّعة حتى الآن: ${JSON.stringify(collected_data)}\n- سجل المحادثة (آخر 10 رسائل): ${JSON.stringify(conversation_history)}\n\nمراحل التأهيل بالترتيب الصارم:\nSTAGE_1 - رحب بالعميل واسأله عن نوع العقار المطلوب\nSTAGE_2 - اسأل عن الميزانية التقريبية\nSTAGE_3 - اسأل عن المنطقة أو الحي المفضل\nSTAGE_4 - اسأل عن الموعد المفضل للمعاينة\nSTAGE_5 - اشكر العميل وأخبره أن المستشار سيتواصل معه قريباً\nSTAGE_6 - التأهيل مكتمل اضبط qualified على true\n\nقواعد صارمة يجب اتباعها:\n1. سؤال واحد فقط في كل رد لا تجمع أسئلة متعددة أبداً\n2. إذا كان رد العميل غير واضح اطلب التوضيح بلطف وابقَ في نفس المرحلة\n3. إذا رفض العميل تحديد موعد المعاينة سجّل غير محدد وانتقل للمرحلة التالية\n4. لا تطلب رقم الهاتف أبداً التواصل يتم عبر تيليجرام\n5. كن دافئاً وودياً وليس رسمياً جداً\n6. لا تذكر المراحل أو الأرقام للعميل تصرف بشكل طبيعي\n7. عندما تصل لـ STAGE_6 اكتب ملخصاً كاملاً في qualification_summary\n\nيجب أن يكون ردك JSON فقط بدون أي نص إضافي قبله أو بعده بهذا الشكل:\n{\"reply_text\": \"نص الرد الذي سيراه العميل\", \"next_stage\": \"STAGE_X\", \"extracted_data\": {\"property_type\": null, \"budget\": null, \"area\": null, \"preferred_date\": null}, \"qualified\": false, \"qualification_summary\": null}\n\nملاحظات:\n- extracted_data ضع القيمة فقط إذا ذكرها العميل في رسالته الحالية وإلا ضع null\n- qualified true فقط عند STAGE_6\n- qualification_summary اكتبه فقط عند STAGE_6\n\nرسالة العميل الحالية: ${user_message}`;\n\nconst gemini_body = JSON.stringify({\n  contents: [\n    {\n      parts: [\n        {\n          text: system_prompt\n        }\n      ]\n    }\n  ],\n  generationConfig: {\n    temperature: 0.7,\n    maxOutputTokens: 2048,\n    responseMimeType: \"application/json\"\n  }\n});\n\nreturn {\n  chat_id,\n  user_message,\n  user_name,\n  current_stage,\n  collected_data:       JSON.stringify(collected_data),\n  conversation_history: JSON.stringify(conversation_history),\n  is_new_lead:          !lead,\n  system_prompt,\n  gemini_body\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [896, 96],
+      "id": "070e1f69-9d7b-47e2-8f7a-d406ed2540a0",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=YOUR_GEMINI_API_KEY",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.gemini_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [1120, 96],
+      "id": "b9928f05-bf50-430a-9f6e-ecb97174073c",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// ════════════════════════════════════════════\n// NODE 7: Parse AI Response\n// ════════════════════════════════════════════\n\nconst aiResponse = $('HTTP Request').item.json;\nconst context    = $('Code in JavaScript').item.json;\n\nlet responseText = '';\ntry {\n  responseText = aiResponse.candidates[0].content.parts[0].text;\n} catch(e) {\n  responseText = '';\n}\n\nresponseText = responseText\n  .replace(/```json\\n?/g, '')\n  .replace(/```\\n?/g, '')\n  .trim();\n\nconst jsonStart = responseText.indexOf('{');\nconst jsonEnd   = responseText.lastIndexOf('}');\nif (jsonStart !== -1 && jsonEnd !== -1) {\n  responseText = responseText.substring(jsonStart, jsonEnd + 1);\n}\n\nlet parsed;\ntry {\n  parsed = JSON.parse(responseText);\n} catch(e) {\n  parsed = {\n    reply_text:            'عذراً، حدث خطأ تقني مؤقت. هل يمكنك إعادة إرسال رسالتك؟ 🙏',\n    next_stage:            context.current_stage,\n    extracted_data:        {},\n    qualified:             false,\n    qualification_summary: null\n  };\n}\n\nconst existingData = JSON.parse(context.collected_data || '{}');\nconst mergedData   = { ...existingData };\n\nif (parsed.extracted_data) {\n  Object.keys(parsed.extracted_data).forEach(key => {\n    if (\n      parsed.extracted_data[key] !== null &&\n      parsed.extracted_data[key] !== undefined &&\n      parsed.extracted_data[key] !== ''\n    ) {\n      mergedData[key] = parsed.extracted_data[key];\n    }\n  });\n}\n\nlet conversation_history = [];\ntry {\n  conversation_history = JSON.parse(context.conversation_history || '[]');\n} catch(e) {\n  conversation_history = [];\n}\n\nconversation_history.push({\n  role:      'assistant',\n  content:   parsed.reply_text,\n  timestamp: new Date().toISOString()\n});\n\nreturn {\n  chat_id:               context.chat_id,\n  user_name:             context.user_name,\n  reply_text:            parsed.reply_text,\n  next_stage:            parsed.next_stage            || context.current_stage,\n  qualified:             parsed.qualified             || false,\n  qualification_summary: parsed.qualification_summary || null,\n  merged_data:           mergedData,\n  conversation_history:  JSON.stringify(conversation_history),\n  is_new_lead:           context.is_new_lead,\n  timestamp:             new Date().toISOString()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1344, 96],
+      "id": "59e64a66-3a99-4dcb-97ee-7b94911f6eea",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1568, 96],
+      "id": "9a6e95af-9175-4dd5-9ec3-073705bbe60d",
+      "name": "Send a text message4",
+      "webhookId": "b7624b82-43e2-4178-beae-f557873d0d37",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "leads sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 409079213,
+          "mode": "list",
+          "cachedResultName": "messages_log"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp":    "={{ $('Code in JavaScript1').item.json.timestamp }}",
+            "chat_id":      "={{ $('Code in JavaScript1').item.json.chat_id }}",
+            "direction":    "bot_reply",
+            "message_text": "={{ $('Code in JavaScript1').item.json.reply_text }}",
+            "stage":        "={{ $('Code in JavaScript1').item.json.next_stage }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [1776, 288],
+      "id": "12b9e525-8a9f-49dc-b6a0-552134d15aef",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0aa29438-c05b-4863-8e3c-1085ce783b28",
+              "leftValue": "={{ $('Code in JavaScript1').item.json.qualified }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [2000, 288],
+      "id": "14e29577-7aab-44d9-b0cf-5f3a8efa1651",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_AGENT_CHAT_ID",
+        "text": "=🏠 عميل جديد مؤهَّل!\n━━━━━━━━━━━━━━━━━━━━━━\n👤 الاسم: {{ $('Code in JavaScript1').item.json.user_name }}\n🆔 Chat ID: {{ $('Code in JavaScript1').item.json.chat_id }}\n\n📋 تفاصيل الطلب:\n• نوع العقار: {{ $('Code in JavaScript1').item.json.merged_data.property_type }}\n• الميزانية:  {{ $('Code in JavaScript1').item.json.merged_data.budget }}\n• المنطقة:    {{ $('Code in JavaScript1').item.json.merged_data.area }}\n• المعاينة:   {{ $('Code in JavaScript1').item.json.merged_data.preferred_date }}\n\n⏰ {{ $('Code in JavaScript1').item.json.timestamp }}\n━━━━━━━━━━━━━━━━━━━━━━\n✅ جاهز للمتابعة الآن",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [2208, 96],
+      "id": "1c38f17e-2e23-47ef-a335-4e287cdabe0f",
+      "name": "Send a text message5",
+      "webhookId": "c5dba630-b1a3-4c74-ae0e-c42004baa0a8",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "AGENT_EMAIL@example.com",
+        "subject": "=🏠 عميل عقاري جديد - {{ $('Code in JavaScript1').item.json.user_name }}",
+        "message": "=<div dir=\"rtl\" style=\"font-family: Arial, sans-serif; padding: 20px; max-width: 600px;\">\n\n  <h2 style=\"color: #2c5f2e; border-bottom: 2px solid #2c5f2e; padding-bottom: 10px;\">\n    🏠 عميل عقاري جديد — تأهيل مكتمل\n  </h2>\n\n  <table border=\"1\" cellpadding=\"12\" cellspacing=\"0\"\n         style=\"border-collapse: collapse; width: 100%; margin-top: 20px;\">\n    <tr style=\"background-color: #f0f7f0;\">\n      <td style=\"width: 35%; font-weight: bold;\">👤 الاسم</td>\n      <td>{{ $('Code in JavaScript1').item.json.user_name }}</td>\n    </tr>\n    <tr>\n      <td style=\"font-weight: bold;\">🏠 نوع العقار</td>\n      <td>{{ $('Code in JavaScript1').item.json.merged_data.property_type }}</td>\n    </tr>\n    <tr style=\"background-color: #f0f7f0;\">\n      <td style=\"font-weight: bold;\">💰 الميزانية</td>\n      <td>{{ $('Code in JavaScript1').item.json.merged_data.budget }}</td>\n    </tr>\n    <tr>\n      <td style=\"font-weight: bold;\">📍 المنطقة</td>\n      <td>{{ $('Code in JavaScript1').item.json.merged_data.area }}</td>\n    </tr>\n    <tr style=\"background-color: #f0f7f0;\">\n      <td style=\"font-weight: bold;\">📅 موعد المعاينة</td>\n      <td>{{ $('Code in JavaScript1').item.json.merged_data.preferred_date }}</td>\n    </tr>\n    <tr>\n      <td style=\"font-weight: bold;\">🆔 Chat ID</td>\n      <td>{{ $('Code in JavaScript1').item.json.chat_id }}</td>\n    </tr>\n    <tr style=\"background-color: #f0f7f0;\">\n      <td style=\"font-weight: bold;\">⏰ وقت التأهيل</td>\n      <td>{{ $('Code in JavaScript1').item.json.timestamp }}</td>\n    </tr>\n  </table>\n\n  <h3 style=\"color: #2c5f2e; margin-top: 25px;\">📝 ملخص المحادثة:</h3>\n  <p style=\"background: #f9f9f9; padding: 15px; border-right: 4px solid #2c5f2e;\">\n    {{ $('Code in JavaScript1').item.json.qualification_summary }}\n  </p>\n\n  <p style=\"margin-top: 25px; color: #666; font-size: 13px;\">\n    هذا البريد أُرسل تلقائياً من نظام تأهيل العملاء العقاريين\n  </p>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [2272, 240],
+      "id": "5d804586-ddb3-47a4-a584-0ad385fc6665",
+      "name": "Send a message",
+      "webhookId": "427f78dd-63cf-48d2-aaac-9bcb0be8d53d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "leads sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id":              "={{ $json.chat_id }}",
+            "name":                 "={{ $json.user_name }}",
+            "property_type":        "={{ $json.merged_data.property_type }}",
+            "budget":               "={{ $json.merged_data.budget }}",
+            "area":                 "={{ $json.merged_data.area }}",
+            "preferred_date":       "={{ $json.merged_data.preferred_date }}",
+            "stage ":               "={{ $json.next_stage }}",
+            "qualified":            "={{ $json.qualified }}",
+            "last_message_at":      "={{ $json.timestamp }}",
+            "conversation_history": "={{ $json.conversation_history }}"
+          },
+          "matchingColumns": ["chat_id"],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [1552, 288],
+      "id": "98f50d33-05ef-445a-a0ef-8445e3430dd4",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [[{ "node": "Edit Fields", "type": "main", "index": 0 }]]
+    },
+    "Edit Fields": {
+      "main": [[{ "node": "Switch", "type": "main", "index": 0 }]]
+    },
+    "Switch": {
+      "main": [
+        [{ "node": "Switch1", "type": "main", "index": 0 }],
+        [{ "node": "Get row(s) in sheet", "type": "main", "index": 0 }]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [{ "node": "Send a text message", "type": "main", "index": 0 }],
+        [{ "node": "Update row in sheet", "type": "main", "index": 0 }],
+        [{ "node": "Send a text message2", "type": "main", "index": 0 }],
+        [{ "node": "Send a text message3", "type": "main", "index": 0 }]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [[{ "node": "Send a text message1", "type": "main", "index": 0 }]]
+    },
+    "Get row(s) in sheet": {
+      "main": [[{ "node": "Code in JavaScript", "type": "main", "index": 0 }]]
+    },
+    "Code in JavaScript": {
+      "main": [[{ "node": "HTTP Request", "type": "main", "index": 0 }]]
+    },
+    "HTTP Request": {
+      "main": [[{ "node": "Code in JavaScript1", "type": "main", "index": 0 }]]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          { "node": "Send a text message4", "type": "main", "index": 0 },
+          { "node": "Append or update row in sheet", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [[{ "node": "Append row in sheet", "type": "main", "index": 0 }]]
+    },
+    "Append row in sheet": {
+      "main": [[{ "node": "If", "type": "main", "index": 0 }]]
+    },
+    "If": {
+      "main": [
+        [
+          { "node": "Send a text message5", "type": "main", "index": 0 },
+          { "node": "Send a message", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
