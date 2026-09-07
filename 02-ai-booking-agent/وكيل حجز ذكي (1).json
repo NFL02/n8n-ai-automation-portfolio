@@ -1,18 +1,15 @@
 {
-  "name": "وكيل حجز ذكي",
+  "name": "وكيل حجز ذكي - Smart Booking Agent",
   "nodes": [
     {
       "parameters": {
         "public": true,
-        "initialMessages": "مرحباً بك في صالون [nofl]! 👋\nكيف أقدر أساعدك اليوم؟ حجز موعد جديد أو تعديل حجز موجود؟",
+        "initialMessages": "مرحباً بك في صالوننا! 👋\nكيف أقدر أساعدك اليوم؟ حجز موعد جديد أو تعديل حجز موجود؟",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
-      "position": [
-        -48,
-        -32
-      ],
+      "position": [-48, -32],
       "id": "9e293944-4195-41b8-a3f6-8612560f0bc0",
       "name": "When chat message received",
       "webhookId": "bb448273-e1d8-4e82-a988-9f19bfe1b822"
@@ -25,29 +22,23 @@
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [
-        336,
-        -32
-      ],
+      "position": [336, -32],
       "id": "608a0790-9ccd-4008-b10b-cba4a6a77bbf",
       "name": "AI Agent"
     },
     {
       "parameters": {
-        "modelName": "models/gemini-3.1-flash-lite",
+        "modelName": "models/gemini-1.5-flash",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
-      "position": [
-        96,
-        208
-      ],
+      "position": [96, 208],
       "id": "e3c9e82a-afdc-44ae-8918-28d1fbe1c55d",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "E8OShStL8pTrj8qA",
+          "id": "YOUR_CREDENTIAL_ID",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -58,10 +49,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.4,
-      "position": [
-        240,
-        208
-      ],
+      "position": [240, 208],
       "id": "d50cc273-af47-4c34-a865-6277ab5f1fe8",
       "name": "Simple Memory"
     },
@@ -72,75 +60,28 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "list",
           "cachedResultName": "حجوزات الصالون",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "الورقة1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=0"
+          "cachedResultName": "الورقة1"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', ``, 'string') }}",
-            "phone ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('phone_', ``, 'string') }}",
-            "service": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('service', ``, 'string') }}",
-            "PreferredTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PreferredTime', ``, 'string') }}",
-            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+            "name": "={{ $fromAI('name', ``, 'string') }}",
+            "phone ": "={{ $fromAI('phone_', ``, 'string') }}",
+            "service": "={{ $fromAI('service', ``, 'string') }}",
+            "PreferredTime": "={{ $fromAI('PreferredTime', ``, 'string') }}",
+            "Status": "={{ $fromAI('Status', ``, 'string') }}"
           },
           "matchingColumns": [],
-          "schema": [
-            {
-              "id": "name",
-              "displayName": "name",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "phone ",
-              "displayName": "phone ",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "service",
-              "displayName": "service",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "PreferredTime",
-              "displayName": "PreferredTime",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Status",
-              "displayName": "Status",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            }
-          ],
+          "schema": [],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -148,16 +89,13 @@
       },
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
-      "position": [
-        576,
-        208
-      ],
+      "position": [576, 208],
       "id": "cbb5f334-fc0e-43f5-baa6-aeb95646867f",
       "name": "Append row in sheet in Google Sheets",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "aw0nRLdHbwyrgLhQ",
-          "name": "Google Sheets account 2"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
         }
       }
     },
@@ -167,32 +105,28 @@
         "toolDescription": "استخدم هذه الأداة للبحث في المواعيد الموجودة والتحقق هل يوجد تعارض، قبل تأكيد أي حجز جديد مع العميل.",
         "documentId": {
           "__rl": true,
-          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "list",
           "cachedResultName": "حجوزات الصالون",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "الورقة1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=0"
+          "cachedResultName": "الورقة1"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
-      "position": [
-        384,
-        208
-      ],
+      "position": [384, 208],
       "id": "65823340-6d02-4615-8a77-d12dc70a964c",
       "name": "Get row(s) in sheet in Google Sheets",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "aw0nRLdHbwyrgLhQ",
-          "name": "Google Sheets account 2"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
         }
       }
     },
@@ -202,32 +136,28 @@
         "toolDescription": "استخدم هذه الأداة لمعرفة سعر أي خدمة عند سؤال العميل عن السعر، أو لذكره تلقائياً عند تأكيد الحجز.",
         "documentId": {
           "__rl": true,
-          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "list",
           "cachedResultName": "حجوزات الصالون",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": 470401756,
           "mode": "list",
-          "cachedResultName": "الاسعار",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=470401756"
+          "cachedResultName": "الاسعار"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
-      "position": [
-        480,
-        208
-      ],
+      "position": [480, 208],
       "id": "023910c7-35f5-43f1-b2c1-59d0607aeb07",
       "name": "Get row(s) in sheet in Google Sheets1",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "aw0nRLdHbwyrgLhQ",
-          "name": "Google Sheets account 2"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
         }
       }
     },
@@ -238,89 +168,28 @@
         "operation": "update",
         "documentId": {
           "__rl": true,
-          "value": "1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM",
+          "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "list",
           "cachedResultName": "حجوزات الصالون",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "الورقة1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZHrtWqfGecYiLcjRqTLJnnHLLZHVFOV6eiVcAT1ShM/edit#gid=0"
+          "cachedResultName": "الورقة1"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "phone ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('phone___using_to_match_', ``, 'string') }}",
-            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', ``, 'string') }}",
-            "service": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('service', ``, 'string') }}",
-            "PreferredTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PreferredTime', ``, 'string') }}",
-            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+            "phone ": "={{ $fromAI('phone___using_to_match_', ``, 'string') }}",
+            "name": "={{ $fromAI('name', ``, 'string') }}",
+            "service": "={{ $fromAI('service', ``, 'string') }}",
+            "PreferredTime": "={{ $fromAI('PreferredTime', ``, 'string') }}",
+            "Status": "={{ $fromAI('Status', ``, 'string') }}"
           },
-          "matchingColumns": [
-            "phone "
-          ],
-          "schema": [
-            {
-              "id": "name",
-              "displayName": "name",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "phone ",
-              "displayName": "phone ",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "service",
-              "displayName": "service",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "PreferredTime",
-              "displayName": "PreferredTime",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Status",
-              "displayName": "Status",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "row_number",
-              "displayName": "row_number",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "readOnly": true,
-              "removed": true
-            }
-          ],
+          "matchingColumns": ["phone "],
+          "schema": [],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -328,16 +197,13 @@
       },
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
-      "position": [
-        720,
-        224
-      ],
+      "position": [720, 224],
       "id": "dedd438b-ebd4-45a4-afc4-32d8008c2c7f",
       "name": "Update row in sheet in Google Sheets",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "aw0nRLdHbwyrgLhQ",
-          "name": "Google Sheets account 2"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
         }
       }
     }
@@ -345,95 +211,30 @@
   "pinData": {},
   "connections": {
     "When chat message received": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "AI Agent", "type": "main", "index": 0 }]]
     },
     "Google Gemini Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_languageModel": [[{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]]
     },
     "Simple Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_memory": [[{ "node": "AI Agent", "type": "ai_memory", "index": 0 }]]
     },
     "Append row in sheet in Google Sheets": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
     },
     "Get row(s) in sheet in Google Sheets": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
     },
     "Get row(s) in sheet in Google Sheets1": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
     },
     "Update row in sheet in Google Sheets": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "executionOrder": "v1"
   },
-  "versionId": "1922c7ea-07fc-41fa-a4c4-b62ee37f5dd2",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "ac8baf90981836d418bab8e05a56cecf4115453c4417bacb1ec55ccb30c5c623"
-  },
-  "nodeGroups": [],
-  "id": "K4buhMEUPG3zFrsf",
   "tags": []
 }
